@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { IconProps } from './IconProps';
+import * as React from "react";
+import { v4 as uuidv4 } from "uuid";
+import { IconProps } from "./IconProps";
 
 interface Path {
   d: string;
   transform?: string;
   fill?: string;
-  fillRule?: 'nonzero' | 'evenodd' | 'inherit';
+  fillRule?: "nonzero" | "evenodd" | "inherit";
 }
 interface Circle {
   cx: number;
@@ -40,20 +40,20 @@ function useGenerateId(newId?: string) {
 
 function renderPaths(paths: Path[] = []) {
   return paths
-    .filter(a => a)
+    .filter((a) => a)
     .map(({ d, ...other }, index) => <path key={index} d={d} {...other} />);
 }
 
 function renderCircles(circles: Circle[] = []) {
   return circles
-    .filter(a => a)
+    .filter((a) => a)
     .map(({ cx, cy, r }, index) => (
       <circle key={index} cx={cx} cy={cy} r={r} />
     ));
 }
 
 export const SvgIcon = ({
-  color = 'currentColor',
+  color = "currentColor",
   size = 24,
   id: defaultId,
   title,
