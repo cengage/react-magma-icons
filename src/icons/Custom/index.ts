@@ -12,6 +12,7 @@ export { FilePdfIcon } from "./FilePdfIcon";
 export { FilePowerpointIcon } from "./FilePowerpointIcon";
 export { FileWordIcon } from "./FileWordIcon";
 export { FileZipIcon } from "./FileZipIcon";
+export { GithubIcon } from "./GithubIcon";
 export { LatePenaltyIcon } from "./LatePenaltyIcon";
 export { LightbulbOnIcon } from "./LightbulbOnIcon";
 export { ManualGradedIcon } from "./ManualGradedIcon";

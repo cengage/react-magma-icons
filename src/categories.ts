@@ -710,6 +710,7 @@ export const categories = {
     "FilePowerpointIcon",
     "FileWordIcon",
     "FileZipIcon",
+    "GithubIcon",
     "LatePenaltyIcon",
     "LightbulbOnIcon",
     "ManualGradedIcon",
