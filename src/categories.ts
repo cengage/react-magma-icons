@@ -701,6 +701,8 @@ export const categories = {
     "CcVisaIcon",
   ],
   Custom: [
+    "BookProjectWfIcon",
+    "BooksWfIcon",
     "CountsTowardsGradeIcon",
     "CreditNoCreditIcon",
     "DroppedIcon",
@@ -717,6 +719,8 @@ export const categories = {
     "MtIcon",
     "NonMindtapActivityIcon",
     "PracticeIcon",
+    "ProjectWfIcon",
+    "TasksWfIcon",
     "UnitIcon",
     "WlGotItIcon",
     "WlLearnItIcon",
