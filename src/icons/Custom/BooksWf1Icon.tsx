@@ -15,4 +15,4 @@ const iconType = {
   circles: [],
 };
 
-export const BooksWfIcon = (props: IconProps) => renderIcon(props, iconType);
+export const BooksWf1Icon = (props: IconProps) => renderIcon(props, iconType);

@@ -4,7 +4,7 @@
  ******************************************************/
 
 export { BookProjectWfIcon } from "./BookProjectWfIcon";
-export { BooksWfIcon } from "./BooksWfIcon";
+export { BooksWf1Icon } from "./BooksWf1Icon";
 export { CountsTowardsGradeIcon } from "./CountsTowardsGradeIcon";
 export { CreditNoCreditIcon } from "./CreditNoCreditIcon";
 export { DroppedIcon } from "./DroppedIcon";

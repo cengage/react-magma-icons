@@ -702,7 +702,7 @@ export const categories = {
   ],
   Custom: [
     "BookProjectWfIcon",
-    "BooksWfIcon",
+    "BooksWf1Icon",
     "CountsTowardsGradeIcon",
     "CreditNoCreditIcon",
     "DroppedIcon",
