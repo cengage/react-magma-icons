@@ -19,7 +19,7 @@ describe("Icon", () => {
     const Icon = AddToQueueIcon; //ICONS[Object.keys(ICONS)[0]];
     const { getByTestId } = render(<Icon testId={testId} title="testTitle" />);
 
-    expect(getByTestId(testId)).toBeInTheDocument();
+    expect(getByTestId(testId)).not.toBeNull();
   });
 
   it("should return null is no iconType is passed in", () => {
