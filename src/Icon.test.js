@@ -1,4 +1,5 @@
 import React from "react";
+import '@testing-library/jest-dom';
 import * as IconExports from "./index";
 import { render } from "@testing-library/react";
 import { renderIcon as renderIconUtil } from "./SvgIcon";
@@ -19,7 +20,7 @@ describe("Icon", () => {
     const Icon = AddToQueueIcon; //ICONS[Object.keys(ICONS)[0]];
     const { getByTestId } = render(<Icon testId={testId} title="testTitle" />);
 
-    expect(getByTestId(testId)).not.toBeNull();
+    expect(getByTestId(testId)).toBeInTheDocument();
   });
 
   it("should return null is no iconType is passed in", () => {
