@@ -1,14 +1,31 @@
-const baseConfig = require('../../jest.config');
 const name = __dirname.split('/').pop();
 
 module.exports = {
-  ...baseConfig,
-  collectCoverageFrom: [`**/packages/${name}/src/**/*.{js,jsx,ts,tsx}`],
+  collectCoverage: true,
+  collectCoverageFrom: [`src/**/*.{js,jsx,ts,tsx}`],
+  coverageDirectory: '<rootDir>/coverage',
+  coverageReporters: ['text', 'lcov'],
   displayName: {
     name,
     color: 'yellow',
   },
-  projects: ['.'],
-  rootDir: '../..',
-  testMatch: [`**/${name}/**/?(*.)+(spec|test).{js,ts,mjs}`],
+  modulePaths: ['<rootDir>'],
+  moduleDirectories: ['node_modules'],
+  testMatch: [`**/?(*.)+(spec|test).{js,ts,mjs}`],
+  testPathIgnorePatterns: [
+    '/.cache/',
+    '/coverage/',
+    '/node_modules/',
+    '/public/',
+    '/reports/',
+    '/static/',
+    '/dist/',
+  ],
+  transform: {
+    '^.+\\.(j|t)s(x)?$': ['babel-jest', { cwd: __dirname }],
+  },
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname',
+  ],
 };
