@@ -1,5 +1,5 @@
 import React from "react";
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 import * as IconExports from "./index";
 import { render } from "@testing-library/react";
 import { renderIcon as renderIconUtil } from "./SvgIcon";
