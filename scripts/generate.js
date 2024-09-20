@@ -1,12 +1,11 @@
-// import SVGO from 'svgo';
-// import rimraf from 'rimraf';
 var queue = require('fastq');
 const fg = require('fast-glob');
 const path = require('path');
-const SVGO = require('svgo');
+const { optimize } = require('svgo');
 const fse = require('fs-extra');
 const xml2js = require('xml2js');
 const iconMap = {};
+const svgoConfig = require('../svgo.config');
 
 const v2aliases = [
   { v1: 'AngleDownIcon', category: 'Navigation', v2: 'ExpandMoreIcon' },
@@ -57,62 +56,9 @@ const doNotEditComment = `/*****************************************************
 function componentName(group, str) {
   const prefix = str.match(/^\d/) ? group : '';
   let arr = [prefix, ...str.split(/[-_]/)];
-  let capital = arr.map(
-    (item, index) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()
-  );
+  let capital = arr.map((item, index) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase());
   return [...capital, 'Icon'].join('');
 }
-
-const svgo = new SVGO({
-  floatPrecision: 4,
-  plugins: [
-    { cleanupAttrs: true },
-    { removeDoctype: true },
-    { removeXMLProcInst: true },
-    { removeComments: true },
-    { removeMetadata: true },
-    { removeTitle: true },
-    { removeDesc: true },
-    { removeUselessDefs: true },
-    { removeXMLNS: true },
-    { removeEditorsNSData: true },
-    { removeEmptyAttrs: true },
-    { removeHiddenElems: true },
-    { removeEmptyText: true },
-    { removeEmptyContainers: true },
-    { removeViewBox: false },
-    { cleanupEnableBackground: true },
-    { minifyStyles: true },
-    { convertStyleToAttrs: true },
-    { convertColors: true },
-    { convertPathData: true },
-    { convertTransform: true },
-    { removeUnknownsAndDefaults: true },
-    { removeNonInheritableGroupAttrs: true },
-    {
-      removeUselessStrokeAndFill: {
-        // https://github.com/svg/svgo/issues/727#issuecomment-303115276
-        removeNone: true,
-      },
-    },
-    { removeUnusedNS: true },
-    { cleanupIDs: true },
-    { cleanupNumericValues: true },
-    { cleanupListOfValues: true },
-    { moveElemsAttrsToGroup: true },
-    { moveGroupAttrsToElems: true },
-    { collapseGroups: true },
-    { removeRasterImages: true },
-    { mergePaths: true },
-    { convertShapeToPath: true },
-    { sortAttrs: true },
-    { removeDimensions: true },
-    { removeAttrs: true },
-    { removeElementsByAttr: true },
-    { removeStyleElement: true },
-    { removeScriptElement: true },
-  ],
-});
 
 const getPaths = (defs = [], use = []) => {
   return defs
@@ -123,9 +69,7 @@ const getPaths = (defs = [], use = []) => {
           (acc, c) => {
             const { d, id } = c['$'];
             const { transform, fillRule } = {
-              ...use
-                .filter(u => u['$'].xlinkHref === `#${id}`)
-                .map(u => u['$'])[0],
+              ...use.filter(u => u['$'].xlinkHref === `#${id}`).map(u => u['$'])[0],
             };
             return { paths: [...acc.paths, { d, transform, fillRule }] };
           },
@@ -190,7 +134,7 @@ const worker = async (svgPath, cb) => {
   addIcon(groupName, componentName(groupName, iconName));
 
   const input = await fse.readFile(svgPath, { encoding: 'utf8' });
-  const result = await svgo.optimize(input);
+  const result = await optimize(input, svgoConfig);
 
   let paths = result.data
     .replace(/fill-opacity=/g, 'fillOpacity=')
@@ -225,13 +169,7 @@ const worker = async (svgPath, cb) => {
         };
         await fse.mkdirp(path.join(__dirname, `../src/icons/${groupName}`));
         await fse.writeFile(
-          path.join(
-            __dirname,
-            `../src/icons/${groupName}/${componentName(
-              groupName,
-              iconName
-            )}.tsx`
-          ),
+          path.join(__dirname, `../src/icons/${groupName}/${componentName(groupName, iconName)}.tsx`),
           getIconFile(svgJson, componentName(groupName, iconName))
         );
       } catch (e) {
@@ -258,27 +196,18 @@ const writeGroupIndexes = () => {
   Object.keys(iconMap).forEach(group => {
     fse.writeFile(
       path.join(__dirname, `../src/icons/${group}/index.ts`),
-      [
-        doNotEditComment,
-        ...iconMap[group].map(icon => `export { ${icon} } from './${icon}';`),
-      ].join('\n')
+      [doNotEditComment, ...iconMap[group].map(icon => `export { ${icon} } from './${icon}';`)].join('\n')
     );
   });
 
   v2aliases.forEach(async alias => {
     await fse.mkdirp(path.join(__dirname, `../src/icons/Aliases`));
-    await fse.writeFile(
-      path.join(__dirname, `../src/icons/Aliases/${alias.v1}.tsx`),
-      getAliasFile(alias)
-    );
+    await fse.writeFile(path.join(__dirname, `../src/icons/Aliases/${alias.v1}.tsx`), getAliasFile(alias));
   });
 
   fse.writeFile(
     path.join(__dirname, `../src/icons/Aliases/index.ts`),
-    [
-      doNotEditComment,
-      ...v2aliases.map(icon => `export { ${icon.v1} } from './${icon.v1}';`),
-    ].join('\n')
+    [doNotEditComment, ...v2aliases.map(icon => `export { ${icon.v1} } from './${icon.v1}';`)].join('\n')
   );
 
   fse.writeFile(

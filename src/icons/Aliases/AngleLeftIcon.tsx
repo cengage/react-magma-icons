@@ -9,7 +9,7 @@ import { ArrowBackIosIcon } from "../Navigation/ArrowBackIosIcon";
 export const AngleLeftIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(
-      "AngleLeftIcon has been deprecated, and will be removed in the next major release.  Please check the React Magma docs to find the new set of icons adjust the size/spacing as needed."
+      "AngleLeftIcon has been deprecated, and will be removed in the next major release.  Please check the React Magma docs to find the new set of icons adjust the size/spacing as needed.",
     );
   }
   return <ArrowBackIosIcon {...props} />;

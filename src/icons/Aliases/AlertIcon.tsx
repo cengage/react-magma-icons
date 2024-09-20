@@ -9,7 +9,7 @@ import { PriorityHighIcon } from "../Notifications/PriorityHighIcon";
 export const AlertIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(
-      "AlertIcon has been deprecated, and will be removed in the next major release.  Please check the React Magma docs to find the new set of icons adjust the size/spacing as needed."
+      "AlertIcon has been deprecated, and will be removed in the next major release.  Please check the React Magma docs to find the new set of icons adjust the size/spacing as needed.",
     );
   }
   return <PriorityHighIcon {...props} />;

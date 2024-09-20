@@ -1,13 +1,13 @@
-import React from "react";
 import "@testing-library/jest-dom";
-import * as IconExports from "./index";
 import { render } from "@testing-library/react";
+import React from "react";
 import { renderIcon as renderIconUtil } from "./SvgIcon";
 import { AddToQueueIcon } from "./icons/AV/AddToQueueIcon";
+import * as IconExports from "./index";
 
 const omit = (props, obj) => {
   return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !props.includes(key))
+    Object.entries(obj).filter(([key]) => !props.includes(key)),
   );
 };
 

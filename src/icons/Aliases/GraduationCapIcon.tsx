@@ -9,7 +9,7 @@ import { SchoolIcon } from "../Social/SchoolIcon";
 export const GraduationCapIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(
-      "GraduationCapIcon has been deprecated, and will be removed in the next major release.  Please check the React Magma docs to find the new set of icons adjust the size/spacing as needed."
+      "GraduationCapIcon has been deprecated, and will be removed in the next major release.  Please check the React Magma docs to find the new set of icons adjust the size/spacing as needed.",
     );
   }
   return <SchoolIcon {...props} />;
