@@ -104,6 +104,7 @@ export { DoneAllIcon } from "./DoneAllIcon";
 export { DoneOutlineIcon } from "./DoneOutlineIcon";
 export { DonutLargeIcon } from "./DonutLargeIcon";
 export { DonutSmallIcon } from "./DonutSmallIcon";
+export { DraftOrdersIcon } from "./DraftOrdersIcon";
 export { DragIndicatorIcon } from "./DragIndicatorIcon";
 export { DynamicFormIcon } from "./DynamicFormIcon";
 export { EcoIcon } from "./EcoIcon";

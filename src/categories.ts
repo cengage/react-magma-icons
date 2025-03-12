@@ -223,6 +223,7 @@ export const categories = {
     "DoneOutlineIcon",
     "DonutLargeIcon",
     "DonutSmallIcon",
+    "DraftOrdersIcon",
     "DragIndicatorIcon",
     "DynamicFormIcon",
     "EcoIcon",
@@ -602,6 +603,7 @@ export const categories = {
     "WifiCallingIcon",
   ],
   Companies: [
+    "XIcon",
     "AndroidIcon",
     "AppleIcon",
     "GlassdoorIcon",
