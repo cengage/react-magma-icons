@@ -242,6 +242,7 @@ export { ProductionQuantityLimitsIcon } from "./ProductionQuantityLimitsIcon";
 export { PublishedWithChangesIcon } from "./PublishedWithChangesIcon";
 export { QueryBuilderIcon } from "./QueryBuilderIcon";
 export { QuestionAnswerIcon } from "./QuestionAnswerIcon";
+export { QuestionMarkIcon } from "./QuestionMarkIcon";
 export { QuickreplyIcon } from "./QuickreplyIcon";
 export { ReceiptIcon } from "./ReceiptIcon";
 export { RecordVoiceOverIcon } from "./RecordVoiceOverIcon";
