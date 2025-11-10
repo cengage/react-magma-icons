@@ -24,6 +24,8 @@ export interface SvgIconProps extends React.HTMLAttributes<HTMLOrSVGElement> {
   style?: React.CSSProperties;
   color?: string;
   size?: number;
+  ariaHidden?: boolean;
+  role?: string;
 }
 
 function generateId(id?: string) {
