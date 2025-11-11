@@ -6,6 +6,4 @@ export interface IconProps {
   title?: string;
   color?: string;
   size?: number;
-  ariaHidden?: boolean;
-  role?: string;
 }

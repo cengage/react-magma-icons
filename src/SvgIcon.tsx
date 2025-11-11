@@ -62,6 +62,8 @@ export const SvgIcon = ({
   testId,
   paths = [],
   circles = [],
+  ariaHidden = title ? false : true,
+  role = title ? "img" : "none",
   ...other
 }: SvgIconProps) => {
   const id = useGenerateId(defaultId);
@@ -75,7 +77,8 @@ export const SvgIcon = ({
       height={size}
       width={size}
       aria-labelledby={title ? id : undefined}
-      data-testid={testId}
+      aria-hidden={ariaHidden}
+      role={role}
     >
       {title && <title id={id}>{title}</title>}
       {paths.length !== 0 && renderPaths(paths)}
