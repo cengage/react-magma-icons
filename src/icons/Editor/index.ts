@@ -98,6 +98,7 @@ export { StackedLineChartIcon } from "./StackedLineChartIcon";
 export { StrikethroughSIcon } from "./StrikethroughSIcon";
 export { SubscriptIcon } from "./SubscriptIcon";
 export { SuperscriptIcon } from "./SuperscriptIcon";
+export { TableIcon } from "./TableIcon";
 export { TableChartIcon } from "./TableChartIcon";
 export { TableRowsIcon } from "./TableRowsIcon";
 export { TextFieldsIcon } from "./TextFieldsIcon";
