@@ -989,6 +989,7 @@ export const categories = {
     "StrikethroughSIcon",
     "SubscriptIcon",
     "SuperscriptIcon",
+    "TableIcon",
     "TableChartIcon",
     "TableRowsIcon",
     "TextFieldsIcon",
