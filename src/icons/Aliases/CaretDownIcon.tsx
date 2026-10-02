@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { ArrowDropDownIcon } from "../Navigation/ArrowDropDownIcon";
+import { ArrowDropDownIcon } from "../UI actions/ArrowDropDownIcon";
 export const CaretDownIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

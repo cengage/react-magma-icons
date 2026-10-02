@@ -6,11 +6,10 @@
 import { IconProps } from "../../IconProps";
 import { renderIcon } from "../../SvgIcon";
 const iconType = {
-  viewBox: "0 0 24 24",
+  viewBox: "0 -960 960 960",
   paths: [
     {
-      d: "M13 1.07V9h7c0-4.08-3.05-7.44-7-7.93zM4 15c0 4.42 3.58 8 8 8s8-3.58 8-8v-4H4v4zm7-13.93C7.05 1.56 4 4.92 4 9h7V1.07z",
-      fillRule: "evenodd",
+      d: "M480-80q-117 0-198.5-81.5T200-360v-160h560v160q0 117-81.5 198.5T480-80zM200-600q0-105 68-183.5T440-877v277H200zm320 0v-277q104 15 172 93.5T760-600H520z",
     },
   ],
   circles: [],

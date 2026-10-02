@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { ArrowBackIosIcon } from "../Navigation/ArrowBackIosIcon";
+import { ArrowBackIosIcon } from "../UI actions/ArrowBackIosIcon";
 export const AngleLeftIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { SettingsIcon } from "../Actions/SettingsIcon";
+import { SettingsIcon } from "../UI actions/SettingsIcon";
 export const Cog2Icon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

@@ -6,7 +6,10 @@ const path = require('path');
 const SVGO = require('svgo');
 const fse = require('fs-extra');
 const xml2js = require('xml2js');
+const legacyIconNames = require('./legacy-icon-names.json');
 const iconMap = {};
+const protectedGroups = new Set(['Custom']);
+const outlinedSuffix = '_outlined';
 
 const v2aliases = [
   { v1: 'AngleDownIcon', category: 'Navigation', v2: 'ExpandMoreIcon' },
@@ -54,13 +57,23 @@ const doNotEditComment = `/*****************************************************
  ******************************************************/
 `;
 
+function toPascalCase(str) {
+  return str
+    .split(/[^a-zA-Z0-9]+/)
+    .filter(Boolean)
+    .map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+    .join('');
+}
+
 function componentName(group, str) {
-  const prefix = str.match(/^\d/) ? group : '';
-  let arr = [prefix, ...str.split(/[-_]/)];
-  let capital = arr.map(
-    (item, index) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()
-  );
-  return [...capital, 'Icon'].join('');
+  const isOutlined = str.endsWith(outlinedSuffix);
+  const iconName = isOutlined ? str.slice(0, -outlinedSuffix.length) : str;
+  const legacyName = legacyIconNames[iconName];
+  const stem = legacyName
+    ? legacyName.replace(/Icon$/, '')
+    : toPascalCase(`${iconName.match(/^\d/) ? `${group}_` : ''}${iconName}`);
+
+  return `${stem}${isOutlined ? 'Outlined' : ''}Icon`;
 }
 
 const svgo = new SVGO({
@@ -173,7 +186,7 @@ const iconType = ${JSON.stringify(icon, null, 2)};
 export const ${name} = (props: IconProps) => renderIcon(props, iconType);
 `;
 
-const getAliasFile = ({ v1, v2, category }) => `${doNotEditComment}
+const getAliasFile = ({ v1, v2 }, category) => `${doNotEditComment}
 import * as React from 'react';
 import { IconProps } from '../../IconProps';
 import { ${v2} } from '../${category}/${v2}';  
@@ -243,6 +256,12 @@ const worker = async (svgPath, cb) => {
 };
 
 const writeGroupIndexes = () => {
+  const groups = Object.keys(iconMap).sort((a, b) => a.localeCompare(b));
+  const generatedIconNames = new Set(
+    groups.reduce((icons, group) => [...icons, ...iconMap[group]], [])
+  );
+  const aliases = v2aliases.filter(({ v1 }) => !generatedIconNames.has(v1));
+
   fse.writeFile(
     path.join(__dirname, `../src/index.ts`),
     [
@@ -250,26 +269,34 @@ const writeGroupIndexes = () => {
       `export { IconProps } from './IconProps';`,
       `export { SvgIcon } from './SvgIcon';`,
       `export * from './icons/Aliases';`,
-      ...Object.keys(iconMap).map(group => `export * from './icons/${group}';`),
+      ...groups.map(group => `export * from './icons/${group}';`),
       `export { categories } from './categories';`,
     ].join('\n')
   );
 
-  Object.keys(iconMap).forEach(group => {
+  groups.filter(group => !protectedGroups.has(group)).forEach(group => {
     fse.writeFile(
       path.join(__dirname, `../src/icons/${group}/index.ts`),
       [
         doNotEditComment,
-        ...iconMap[group].map(icon => `export { ${icon} } from './${icon}';`),
+        ...iconMap[group]
+          .sort((a, b) => a.localeCompare(b))
+          .map(icon => `export { ${icon} } from './${icon}';`),
       ].join('\n')
     );
   });
 
-  v2aliases.forEach(async alias => {
+  aliases.forEach(async alias => {
+    const category = groups.find(group => iconMap[group].includes(alias.v2));
+
+    if (!category) {
+      throw new Error(`Unable to resolve category for alias target ${alias.v2}`);
+    }
+
     await fse.mkdirp(path.join(__dirname, `../src/icons/Aliases`));
     await fse.writeFile(
       path.join(__dirname, `../src/icons/Aliases/${alias.v1}.tsx`),
-      getAliasFile(alias)
+      getAliasFile(alias, category)
     );
   });
 
@@ -277,24 +304,49 @@ const writeGroupIndexes = () => {
     path.join(__dirname, `../src/icons/Aliases/index.ts`),
     [
       doNotEditComment,
-      ...v2aliases.map(icon => `export { ${icon.v1} } from './${icon.v1}';`),
+      ...aliases.map(icon => `export { ${icon.v1} } from './${icon.v1}';`),
     ].join('\n')
   );
 
   fse.writeFile(
     path.join(__dirname, `../src/categories.ts`),
     `${doNotEditComment}
-export const categories = ${JSON.stringify(iconMap, null, 2)}`
+export const categories = ${JSON.stringify(
+      Object.fromEntries(
+        groups.map(group => [
+          group,
+          [...iconMap[group]].sort((a, b) => a.localeCompare(b)),
+        ])
+      ),
+      null,
+      2
+    )}`
   );
 };
 
-fse.removeSync(path.join(__dirname, `../src/icons`));
+const generatedIconsRoot = path.join(__dirname, `../src/icons`);
+
+fse
+  .readdirSync(generatedIconsRoot, { withFileTypes: true })
+  .filter(entry => entry.isDirectory() && !protectedGroups.has(entry.name))
+  .forEach(entry => fse.removeSync(path.join(generatedIconsRoot, entry.name)));
+
+const protectedIcons = fg.sync(
+  path.join(__dirname, '../src/svg/icons/Custom/*.svg')
+);
+protectedIcons.forEach(icon => {
+  const [groupName, iconName] = getNames(icon);
+  addIcon(groupName, componentName(groupName, iconName));
+});
+
 const q = queue(worker, 8);
 q.drain = () => {
   writeGroupIndexes();
 };
 
-const icons = fg.sync(path.join(__dirname, '../src/svg/icons/**/*.svg'));
+const icons = fg.sync(path.join(__dirname, '../src/svg/icons/**/*.svg'), {
+  ignore: [path.join(__dirname, '../src/svg/icons/Custom/*.svg')],
+});
 icons.forEach(icon =>
   q.push(icon, function (err, result) {
     if (err) {

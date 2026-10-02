@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { ChevronRightIcon } from "../Navigation/ChevronRightIcon";
+import { ChevronRightIcon } from "../UI actions/ChevronRightIcon";
 export const CircleRightIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

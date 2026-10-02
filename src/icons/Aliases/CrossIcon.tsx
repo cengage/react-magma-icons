@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { CloseIcon } from "../Navigation/CloseIcon";
+import { CloseIcon } from "../UI actions/CloseIcon";
 export const CrossIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

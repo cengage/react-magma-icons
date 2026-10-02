@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { SchoolIcon } from "../Social/SchoolIcon";
+import { SchoolIcon } from "../Activities/SchoolIcon";
 export const GraduationCapIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

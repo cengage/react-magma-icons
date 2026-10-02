@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { HelpOutlineIcon } from "../Actions/HelpOutlineIcon";
+import { HelpOutlineIcon } from "../Uncategorized/HelpOutlineIcon";
 export const QuestionCircleOIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

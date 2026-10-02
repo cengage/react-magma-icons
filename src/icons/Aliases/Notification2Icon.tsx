@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { ErrorIcon } from "../Alert/ErrorIcon";
+import { ErrorIcon } from "../Actions/ErrorIcon";
 export const Notification2Icon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(
