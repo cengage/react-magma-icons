@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { SouthIcon } from "../Navigation/SouthIcon";
+import { SouthIcon } from "../Maps/SouthIcon";
 export const ArrowDown2Icon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

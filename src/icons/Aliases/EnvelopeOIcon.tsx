@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { MailOutlineIcon } from "../Communication/MailOutlineIcon";
+import { MailOutlineIcon } from "../Uncategorized/MailOutlineIcon";
 export const EnvelopeOIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

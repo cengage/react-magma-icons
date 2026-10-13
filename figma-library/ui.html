@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root { color-scheme: light dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 20px;
+        color: var(--figma-color-text);
+        background: var(--figma-color-bg);
+        font: 12px/1.45 Inter, system-ui, sans-serif;
+      }
+      h1 { margin: 0 0 8px; font-size: 16px; }
+      p { margin: 0 0 16px; color: var(--figma-color-text-secondary); }
+      .picker {
+        display: block;
+        padding: 20px;
+        border: 1px dashed var(--figma-color-border);
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+      }
+      .picker:hover { background: var(--figma-color-bg-hover); }
+      input[type="file"] { display: none; }
+      .row { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+      .row.actions { justify-content: flex-end; }
+      button {
+        min-height: 32px;
+        padding: 0 14px;
+        border: 1px solid var(--figma-color-border);
+        border-radius: 6px;
+        color: var(--figma-color-text);
+        background: var(--figma-color-bg-secondary);
+        cursor: pointer;
+      }
+      button.primary {
+        border-color: var(--figma-color-bg-brand);
+        color: var(--figma-color-text-onbrand);
+        background: var(--figma-color-bg-brand);
+      }
+      button:disabled { opacity: .45; cursor: default; }
+      #summary, #progress { margin-top: 16px; }
+      #progress { display: none; }
+      progress { width: 100%; height: 8px; }
+      #status { margin-top: 8px; color: var(--figma-color-text-secondary); }
+      .warning { color: var(--figma-color-text-warning); }
+      code { font-family: ui-monospace, SFMono-Regular, monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>Magma Icon Library Builder</h1>
+    <p>
+      Choose the repository's <code>src/svg/icons</code> folder. Icons are
+      grouped by category and become searchable Figma components.
+    </p>
+
+    <label class="picker">
+      <strong>Choose icons folder</strong><br />
+      <span id="picker-detail">No folder selected</span>
+      <input id="folder" type="file" webkitdirectory multiple accept=".svg,image/svg+xml" />
+    </label>
+
+    <div id="summary"></div>
+
+    <label class="row">
+      <input id="replace" type="checkbox" checked />
+      Replace matching generated components
+    </label>
+
+    <div id="progress">
+      <progress id="bar" value="0" max="1"></progress>
+      <div id="status">Preparing…</div>
+    </div>
+
+    <div class="row actions">
+      <button id="cancel">Cancel</button>
+      <button id="normalize">Fix library names</button>
+      <button id="sample" disabled>Build sample</button>
+      <button id="build" class="primary" disabled>Build library</button>
+    </div>
+
+    <script>
+      const folderInput = document.getElementById("folder");
+      const pickerDetail = document.getElementById("picker-detail");
+      const summary = document.getElementById("summary");
+      const buildButton = document.getElementById("build");
+      const sampleButton = document.getElementById("sample");
+      const cancelButton = document.getElementById("cancel");
+      const normalizeButton = document.getElementById("normalize");
+      const replaceInput = document.getElementById("replace");
+      const progress = document.getElementById("progress");
+      const bar = document.getElementById("bar");
+      const status = document.getElementById("status");
+
+      let icons = [];
+      let batches = [];
+      let processed = 0;
+      let buildTotal = 0;
+      let totals = { created: 0, replaced: 0, skipped: 0 };
+
+      const pascalCase = value =>
+        value
+          .split(/[_\-\s]+/)
+          .filter(Boolean)
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join("");
+
+      const displayName = value =>
+        value
+          .split(/[_\-]+/)
+          .filter(Boolean)
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" ");
+
+      function parsePath(file) {
+        const parts = file.webkitRelativePath.split("/");
+        const iconsIndex = parts.lastIndexOf("icons");
+        const categoryIndex = iconsIndex >= 0 ? iconsIndex + 1 : parts.length - 2;
+        return {
+          category: parts[categoryIndex],
+          fileName: parts[parts.length - 1],
+        };
+      }
+
+      async function readSelection(files) {
+        const svgFiles = [...files].filter(file => file.name.toLowerCase().endsWith(".svg"));
+        const byKey = new Map();
+
+        for (const file of svgFiles) {
+          const { category, fileName } = parsePath(file);
+          if (!category) continue;
+          const stem = fileName.replace(/\.svg$/i, "");
+          const isOutlined = category !== "Custom" && stem.endsWith("_outlined");
+          const sourceName = isOutlined ? stem.replace(/_outlined$/, "") : stem;
+          const key = `${category}/${sourceName}`;
+          const record = byKey.get(key) || {
+            category,
+            sourceName,
+            displayName: displayName(sourceName),
+            searchTerms: [
+              sourceName,
+              sourceName.replace(/_/g, " "),
+              `${pascalCase(sourceName)}Icon`,
+            ],
+            reactNames: {
+              Filled: `${pascalCase(sourceName)}Icon`,
+              Outlined: `${pascalCase(sourceName)}OutlinedIcon`,
+            },
+            filled: null,
+            outlined: null,
+          };
+          record[isOutlined ? "outlined" : "filled"] = await file.text();
+          byKey.set(key, record);
+        }
+
+        icons = [...byKey.values()].sort((a, b) =>
+          `${a.category}/${a.displayName}`.localeCompare(`${b.category}/${b.displayName}`)
+        );
+        const categories = new Set(icons.map(icon => icon.category));
+        const paired = icons.filter(icon => icon.filled && icon.outlined).length;
+        const custom = icons.filter(icon => icon.category === "Custom").length;
+        const legacyOnly = icons.filter(
+          icon => icon.category !== "Custom" && (!icon.filled || !icon.outlined)
+        );
+
+        pickerDetail.textContent = `${svgFiles.length.toLocaleString()} SVG files selected`;
+        summary.innerHTML = [
+          `<strong>${icons.length.toLocaleString()}</strong> searchable icons`,
+          `${categories.size} categories`,
+          `${paired.toLocaleString()} filled/outlined pairs`,
+          `${custom.toLocaleString()} Custom icons`,
+          legacyOnly.length
+            ? `${legacyOnly.length} retained legacy icons have no outlined source`
+            : "All Google variants are paired",
+        ].join("<br />");
+        buildButton.disabled = icons.length === 0;
+        sampleButton.disabled = icons.length === 0;
+      }
+
+      function makeBatches(sourceIcons = icons) {
+        const grouped = new Map();
+        for (const icon of sourceIcons) {
+          if (!grouped.has(icon.category)) grouped.set(icon.category, []);
+          grouped.get(icon.category).push(icon);
+        }
+        batches = [];
+        for (const [category, categoryIcons] of grouped) {
+          for (let index = 0; index < categoryIcons.length; index += 25) {
+            batches.push({ category, icons: categoryIcons.slice(index, index + 25) });
+          }
+        }
+      }
+
+      function sendNextBatch() {
+        const batch = batches.shift();
+        if (!batch) {
+          parent.postMessage({ pluginMessage: { type: "complete" } }, "*");
+          return;
+        }
+        status.textContent = `Building ${batch.category} — ${processed.toLocaleString()} of ${buildTotal.toLocaleString()}`;
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "batch",
+              category: batch.category,
+              icons: batch.icons,
+              replaceExisting: replaceInput.checked,
+            },
+          },
+          "*"
+        );
+      }
+
+      folderInput.addEventListener("change", event => readSelection(event.target.files));
+      cancelButton.addEventListener("click", () =>
+        parent.postMessage({ pluginMessage: { type: "cancel" } }, "*")
+      );
+      normalizeButton.addEventListener("click", () => {
+        normalizeButton.disabled = true;
+        progress.style.display = "block";
+        status.textContent = "Removing duplicate category layers…";
+        parent.postMessage({ pluginMessage: { type: "normalize-names" } }, "*");
+      });
+      function startBuild(sourceIcons) {
+        makeBatches(sourceIcons);
+        processed = 0;
+        buildTotal = sourceIcons.length;
+        totals = { created: 0, replaced: 0, skipped: 0 };
+        buildButton.disabled = true;
+        sampleButton.disabled = true;
+        folderInput.disabled = true;
+        progress.style.display = "block";
+        bar.max = sourceIcons.length;
+        bar.value = 0;
+        parent.postMessage({ pluginMessage: { type: "start" } }, "*");
+      }
+
+      sampleButton.addEventListener("click", () => {
+        const paired = icons.filter(icon => icon.filled && icon.outlined).slice(0, 5);
+        const custom = icons.find(icon => icon.category === "Custom");
+        startBuild(custom ? [...paired, custom] : paired);
+      });
+      buildButton.addEventListener("click", () => startBuild(icons));
+
+      onmessage = event => {
+        const message = event.data.pluginMessage;
+        if (!message) return;
+        if (message.type === "ready") sendNextBatch();
+        if (message.type === "batch-complete") {
+          processed += message.count;
+          totals.created += message.created;
+          totals.replaced += message.replaced;
+          totals.skipped += message.skipped;
+          bar.value = processed;
+          sendNextBatch();
+        }
+        if (message.type === "complete") {
+          status.textContent = `Complete — ${totals.created.toLocaleString()} created, ${totals.replaced.toLocaleString()} replaced, ${totals.skipped.toLocaleString()} skipped`;
+          buildButton.disabled = false;
+          sampleButton.disabled = false;
+          folderInput.disabled = false;
+        }
+        if (message.type === "names-normalized") {
+          status.textContent = `Names fixed — ${message.renamedPages.toLocaleString()} pages and ${message.renamedComponents.toLocaleString()} components renamed`;
+          normalizeButton.disabled = false;
+        }
+      };
+    </script>
+  </body>
+</html>

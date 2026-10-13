@@ -1,9 +1,9 @@
 {
   "name": "react-magma-icons",
   "license": "MIT",
-  "version": "3.2.7",
+  "version": "3.3.0",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "module": "dist/esm/index.js",
   "typings": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
@@ -22,9 +22,11 @@
   "scripts": {
     "test": "tsdx test",
     "test-watch": "tsdx test --watch",
-    "build": "npm run generate:icons && npm run prettier && tsdx build",
+    "build": "npm run generate:icons && npm run prettier && npm run build:modules",
+    "build:modules": "rimraf dist && tsc --project tsconfig.build.cjs.json && tsc --project tsconfig.build.esm.json",
     "build-watch": "tsdx watch",
     "lint": "eslint ./src",
+    "import:material-symbols": "node scripts/import-material-symbols.js",
     "generate:icons": "node scripts/generate.js",
     "prettier": "prettier --write --loglevel warn --ignore-path .eslintignore \"src/**/*.{js,jsx,ts,tsx,json}\"",
     "prepublishOnly": "npm run build"
@@ -49,6 +51,7 @@
     "rimraf": "^3.0.2",
     "svgo": "^1.3.2",
     "tsdx": "^0.14.1",
+    "typescript": "^5.6.3",
     "uuid": "^11.1.1",
     "xml2js": "^0.4.23"
   },

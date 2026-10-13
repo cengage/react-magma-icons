@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { SortDoubleArrowIcon } from "../Navigation/SortDoubleArrowIcon";
+import { SortDoubleArrowIcon } from "../Uncategorized/SortDoubleArrowIcon";
 export const ArrowDoubleIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

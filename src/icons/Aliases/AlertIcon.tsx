@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { PriorityHighIcon } from "../Notifications/PriorityHighIcon";
+import { PriorityHighIcon } from "../Actions/PriorityHighIcon";
 export const AlertIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

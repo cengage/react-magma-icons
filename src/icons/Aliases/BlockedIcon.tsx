@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { BlockIcon } from "../Content/BlockIcon";
+import { BlockIcon } from "../UI actions/BlockIcon";
 export const BlockedIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

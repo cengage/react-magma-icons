@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "importHelpers": false,
+    "module": "esnext",
+    "noEmit": false,
+    "outDir": "dist/esm",
+    "rootDir": "src",
+    "skipLibCheck": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["src/**/*.test.*", "src/__snapshots__/**"]
+}

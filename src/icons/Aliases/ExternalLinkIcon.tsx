@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { LaunchIcon } from "../Actions/LaunchIcon";
+import { LaunchIcon } from "../Uncategorized/LaunchIcon";
 export const ExternalLinkIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(

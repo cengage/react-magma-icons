@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { IconProps } from "../../IconProps";
-import { ExpandMoreIcon } from "../Navigation/ExpandMoreIcon";
+import { ExpandMoreIcon } from "../Uncategorized/ExpandMoreIcon";
 export const CircleDownIcon = (props: IconProps) => {
   if (process.env.NODE_ENV === "development") {
     console.warn(
